@@ -1,0 +1,12 @@
+name: overfittingsimulation
+title: Overfittingsimulation
+username: saboustocker
+account: saboustocker
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 12946822
+bundleId: 9196422
+url: https://saboustocker.shinyapps.io/overfittingsimulation/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
