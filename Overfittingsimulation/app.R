@@ -62,12 +62,12 @@ ui <- fluidPage(
   
   tags$footer(
     class = "footer",
-    style = "position:fixed;bottom:0;width:100%;padding:10px;background-color:#f1f1f1;text-align:center;",
+    style = "position:flex;bottom:0;width:100%;padding:10px;background-color:#f1f1f1;text-align:center;",
     p(
       "Source code: ",
       tags$a(href = "https://github.com/allzweckchnobli/overfittingsimulation", icon("github"), target = "_blank"), 
       "| Contact: ",
-      tags$a(href = "mailto:sabourani.stocker@uzh.ch", "email me :)")
+      tags$a(href = "mailto:sabourani.stocker@uzh.ch", "message me :)")
       
     )
   )
@@ -103,9 +103,9 @@ server <- function(input, output, session) {
     set.seed(123)
     
     if (input$data_type == "uncorrelated") {
-      data_uncorrelated <- data.frame(matrix(rnorm(1000 * 10, mean = 10, sd = 5), ncol = 10))
+      data_uncorrelated <- data.frame(matrix(runif(1000 * 10,min=1,max=10), ncol = 10))
       colnames(data_uncorrelated) <- paste0("x", 1:10)
-      data_uncorrelated$y <- 10 + 2 * data_uncorrelated$x1 + rnorm(n = 1000, mean = 0, sd = 1)
+      data_uncorrelated$y <- 10 + 2 * data_uncorrelated$x1 + rnorm(n = 1000, mean = 0, sd = 0.5)
       data <- data_uncorrelated
     } else {
       n <- 10
@@ -117,11 +117,11 @@ server <- function(input, output, session) {
           cor_mat[j, i] <- cor_value
         }
       }
-      predictors <- mvrnorm(n = 1000, mu = rep(0, 10), Sigma = cor_mat)+10
+      predictors <- mvrnorm(n = 1000, mu = rep(0, 10), Sigma = cor_mat)+5
       data_correlated <- as.data.frame(predictors)
       colnames(data_correlated) <- paste0("x", 1:10)
       # Add the response variable y
-      data_correlated$y <- 10 + 2 * data_correlated$x1 + rnorm(n = 1000, mean = 0, sd = 0.5)
+      data_correlated$y <- 10 + 2 * data_correlated$x1 + rnorm(n = 1000, mean = 0, sd = 2)
       data <- data_correlated 
     }
   })
@@ -188,6 +188,7 @@ server <- function(input, output, session) {
     output$trainPlot <- renderPlot({
       ggplot(trainingsset, aes(x = y, y = y_pred)) +
         geom_point(color = "blue") +
+        ylim(0,30) + 
         geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
         labs(title = "Training Set: Actual vs Predicted", x = "Actual Y", y = "Predicted Y") +
         theme_minimal()
@@ -197,6 +198,7 @@ server <- function(input, output, session) {
     output$testPlot <- renderPlot({
       ggplot(testset, aes(x = y, y = y_pred)) +
         geom_point(color = "blue") +
+        ylim(0,30) + 
         geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
         labs(title = "Test Set: Actual vs Predicted", x = "Actual Y", y = "Predicted Y") +
         theme_minimal()
@@ -217,7 +219,7 @@ server <- function(input, output, session) {
         geom_line(aes(y = y_pred, color = "y_pred"), size = 1) +  # Line for y_pred
         labs(x = "Index", y = "Values", color = "Legend") +  # Label axes and legend
         theme_minimal() +
-        ggtitle("Training Set: Actual vs Predicted")
+        ggtitle("Test Set: Actual vs Predicted")
     })
     
   })
