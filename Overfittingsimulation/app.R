@@ -7,9 +7,12 @@ library(MASS)
 library(rsconnect)
 
 # Define UI for the application
+library(shiny)
+library(shinyjs)
+
 ui <- fluidPage(
   useShinyjs(),  # Initialize shinyjs
-  titlePanel("Linear Regression Simulation with Dynamic Inputs Version 2"),
+  titlePanel("Overfitting Linear Regression Simulation with Dynamic Inputs"),
   
   sidebarLayout(
     sidebarPanel(
@@ -29,25 +32,25 @@ ui <- fluidPage(
       tabsetPanel(
         tabPanel("How To",
                  h2("How to use this Applet"),
-                 p("This applet has been programmed to visualize how different training datasets and assumptions influence the fit in subsequent test datasets. You can chose the number of participants, the number of predictors (there are a total of 10), and the maximum power of x1."),
+                 p("This applet has been programmed to visualize how different training datasets and assumptions influence the fit in subsequent test datasets. You can choose the number of participants, the number of predictors (there are a total of 10), and the maximum power of x1."),
                  p("The true formula that underlies the Y is: Y = 10 + 2*X1 + Error, meaning that adding additional predictors or powers adds spurious predictions to the model which are not there in the real data."),
                  p("In the tabs 'plots' and 'summary & R-squared', you can compare how your Y and Y_predicted compare to each other on a visual level as well as on a performance level using the metric R-squared.")
-                 ),
+        ),
         tabPanel("Plots",
-                 h2("Plotting the actual Y versus the Predicted Y according to the parameter Estimates calculated"),
+                 h2("Plotting the actual Y versus the Predicted Y according to the parameter estimates calculated"),
                  p("This plot displays where the actual Y of any given person is and where the model estimates Y based on the training and the model. The red line in the middle is where the dots would be if we had a perfect prediction (every Y is predicted perfectly by our parameter estimates).",
                    class="alert alert-info"),
                  plotOutput("trainPlot"),
                  plotOutput("testPlot"),
-                 h2("Plotting the actual progression of Y and the prediction of Y according to the parameter Estimates calculated"),
+                 h2("Plotting the actual progression of Y and the prediction of Y according to the parameter estimates calculated"),
                  p("These plots show how the true Y progresses in ascending order, and how the predicted Y compares to it. The more overfitted the training dataset is, the closer Y_pred follows Y in the training plot, but the more inaccurate it is in the test plot.",
                    class = "alert alert-info"),
                  plotOutput("trainPlot2"),
                  plotOutput("testPlot2")
         ),
         tabPanel("Summary & R-squared",
-                 h2("Checking the Model fit according to the training data"),
-                 p("The summary output displays if the training set falely assumes that some predictors are more relevant to fit the model than they are (anything other than X1 should not be significant)."),
+                 h2("Checking the model fit according to the training data"),
+                 p("The summary output displays if the training set falsely assumes that some predictors are more relevant to fit the model than they are (anything other than X1 should not be significant)."),
                  verbatimTextOutput("modelSummary"),
                  p("The two R-squared values show how good the model fitted on the training data predicts the test data."),
                  verbatimTextOutput("rSquaredtrain"),
@@ -55,8 +58,19 @@ ui <- fluidPage(
         )
       )
     )
+  ),
+  
+  tags$footer(
+    class = "footer",
+    style = "position:fixed;bottom:0;width:100%;padding:20px;background-color:#f1f1f1;text-align:right;",
+    p(
+      "Source code available at: ",
+      tags$a(href = "https://github.com/allzweckchnobli/overfittingsimulation", "Github/allzweckchnobli/overfittingsimulation")
+      
+    )
   )
 )
+
 
 # Define server logic
 server <- function(input, output, session) {
@@ -89,6 +103,7 @@ server <- function(input, output, session) {
     if (input$data_type == "uncorrelated") {
       data_uncorrelated <- data.frame(matrix(rnorm(1000 * 10, mean = 10, sd = 5), ncol = 10))
       colnames(data_uncorrelated) <- paste0("x", 1:10)
+      data_uncorrelated$y <- 10 + 2 * data_uncorrelated$x1 + rnorm(n = 1000, mean = 0, sd = 1)
       data <- data_uncorrelated
     } else {
       n <- 10
@@ -103,12 +118,10 @@ server <- function(input, output, session) {
       predictors <- mvrnorm(n = 1000, mu = rep(0, 10), Sigma = cor_mat)+10
       data_correlated <- as.data.frame(predictors)
       colnames(data_correlated) <- paste0("x", 1:10)
-      data <- data_correlated
+      # Add the response variable y
+      data_correlated$y <- 10 + 2 * data_correlated$x1 + rnorm(n = 1000, mean = 0, sd = 0.5)
+      data <- data_correlated 
     }
-    
-    # Add the response variable y
-    data$y <- 10 + 2 * data$x1 + rnorm(n = 1000, mean = 0, sd = 2)
-    data
   })
   
   # Run analysis on button click
@@ -204,7 +217,7 @@ server <- function(input, output, session) {
         theme_minimal() +
         ggtitle("Training Set: Actual vs Predicted")
     })
-
+    
   })
 }
 
