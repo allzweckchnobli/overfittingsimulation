@@ -5,7 +5,7 @@ account: saboustocker
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 12946822
-bundleId: 9196422
+bundleId: 9224409
 url: https://saboustocker.shinyapps.io/overfittingsimulation/
 version: 1
 asMultiple: FALSE

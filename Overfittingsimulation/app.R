@@ -62,10 +62,12 @@ ui <- fluidPage(
   
   tags$footer(
     class = "footer",
-    style = "position:fixed;bottom:0;width:100%;padding:20px;background-color:#f1f1f1;text-align:right;",
+    style = "position:fixed;bottom:0;width:100%;padding:10px;background-color:#f1f1f1;text-align:center;",
     p(
-      "Source code available at: ",
-      tags$a(href = "https://github.com/allzweckchnobli/overfittingsimulation", "Github/allzweckchnobli/overfittingsimulation")
+      "Source code: ",
+      tags$a(href = "https://github.com/allzweckchnobli/overfittingsimulation", icon("github"), target = "_blank"), 
+      "| Contact: ",
+      tags$a(href = "mailto:sabourani.stocker@uzh.ch", "email me :)")
       
     )
   )
