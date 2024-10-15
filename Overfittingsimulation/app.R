@@ -9,7 +9,7 @@ library(rsconnect)
 # Define UI for the application
 ui <- fluidPage(
   useShinyjs(),  # Initialize shinyjs
-  titlePanel("Linear Regression Simulation with Dynamic Inputs"),
+  titlePanel("Linear Regression Simulation with Dynamic Inputs Version 2"),
   
   sidebarLayout(
     sidebarPanel(
